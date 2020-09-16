@@ -1,0 +1,131 @@
+﻿@model IEnumerable<MinhaAppMvcDesafio.ViewModels.ProdutoViewModel>
+<h1 class="titulo">@ViewData["Titulo"]</h1>
+
+<p supress-by-claim-name="Produto" supress-by-claim-value="Adicionar">
+    <a class="btn btn-info" style="border:solid 2px;border-color:blue;font-family:Arial;width:100px;" asp-action="Cadastro" asp-route-id="0">Novo</a>
+</p>
+@{
+    if (Model.Count() == 0)
+    {
+        <div class="lista_vazia">
+            Não há registros nesta tela
+        </div>
+    }
+    else
+    {
+        <div style="height:350px;">
+            <table class="table table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th style="width:30%;"><a href="" id="link1">@Html.DisplayNameFor(model => model.Nome)</a></th>
+                        <th style="width:30%;text-align:center;"><a href="" id="link2">@Html.DisplayNameFor(model => model.Fornecedor)</a></th>
+                        <th style="width:15%;text-align:center;"><a href="" id="link3">@Html.DisplayNameFor(model => model.Valor)</a></th>
+                        <th style="width:15%;text-align:center;"><a href="" id="link4">@Html.DisplayNameFor(model => model.Ativo)</a></th>
+                        <th style="width:10%;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => item.Nome)</td>
+                            <td style="text-align:center;">@Html.DisplayFor(modelItem => item.Fornecedor.Nome)</td>
+                            <td style="text-align:right;">@Html.DisplayFor(modelItem => item.Valor)</td>
+                            <td style="text-align:center;">@Html.DisplayFor(modelItem => item.Ativo)</td>
+                            <td class="text-center;">
+                                <a class="btn btn-warning" supress-by-claim-name="Produto" supress-by-claim-value="Editar" asp-action="Cadastro" asp-route-id="@item.Id"><img src="~/imagens/editar.jpg" /></a>
+                                <a class="btn btn-danger" supress-by-claim-name="Produto" supress-by-claim-value="Excluir" asp-action="Excluir" asp-route-id="@item.Id"><img src="~/imagens/excluir.jpg" /></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+        <div id="div_paginacao"></div>
+        <form>
+            <input type="hidden" id="Acao" name="Acao" value="@ViewBag.Acao" />
+            <input type="hidden" id="Pagina" name="Pagina" value="@ViewData["Pagina"]" />
+            <input type="hidden" id="QtdPaginas" name="QtdPaginas" value="@ViewData["QtdPaginas"]" />
+            <input type="hidden" id="ViewIndex" name="ViewIndex" value="produtos" />
+            <input type="hidden" id="OrdCampo" name="OrdCampo" value="@ViewData["OrdCampo"]" />
+            <input type="hidden" id="OrdSentido" name="OrdSentido" value="@ViewData["OrdSentido"]" />
+        </form>
+    }
+}
+
+<div id="div_mensagem"></div>
+
+<script>
+    function Excluir()
+    {
+        if (!confirm("Tem certeza que deseja excluir este registro?"))
+            return;
+    }
+
+    function PreencherDivMensagem()
+    {
+        if ($("#Acao").val() == "")
+            return;
+        var conteudo = "";
+        var classe, mensagem;
+        if ($("#Acao").val() == "E")
+        {
+            classe = "danger";
+            mensagem = "Dados excluídos com sucesso.";
+        }
+        else
+        {
+            classe = "success";
+            mensagem = "Dados salvos com sucesso.";
+        }
+        conteudo += "<div style='padding-top:15px;'></div>";
+        conteudo += "<div id='msg_box' class='alert alert-" + classe + "'>";
+        conteudo += "<button type='button' class='close' data-dismiss='alert'>×</button>";
+        conteudo += "<h3 id='msgRetorno' style='width:100%;text-align:center;'>" + mensagem + "</h3>";
+        conteudo += "</div>";
+        $("#div_mensagem").html(conteudo);
+        $("#msg_box").fadeOut(10000);
+    }
+
+    function DefinirOrdenacao(link)
+    {
+        var opcao = link.id.replace("link", "");
+        var sentido = "0";
+        if (opcao == $("#OrdCampo").val())
+        {
+            sentido = ($("#OrdSentido").val() == "1" ? "0" : "1");
+        }
+        $("#OrdCampo").val(opcao);
+        $("#OrdSentido").val(sentido);
+        $("#Pagina").val($("#Pagina").val().substring(0, 1) + $("#OrdCampo").val() + $("#OrdSentido").val());
+        $("#link" + opcao).attr("href", "../lista-" + $("#ViewIndex").val() + "/" + $("#Pagina").val());
+    }
+
+    $(document).ready(function ()
+    {
+        $("a[class='btn btn-info']").css("font-weight", "bold").css("font-size", "17px").css("padding-top", "5px").css("padding-bottom", "5px").css("margin-left", "5px").css("margin-right", "5px");
+        $("a[class='btn btn-warning']").css("padding-top", "1px").css("padding-bottom", "2px").css("padding-left", "5px").css("padding-right", "5px");
+        $("a[class='btn btn-danger']").css("padding-top", "1px").css("padding-bottom", "2px").css("padding-left", "5px").css("padding-right", "5px");
+        $("table[class='table table-hover']").css("font-family", "Arial").css("font-size", "16px");
+        $("table[class='table table-hover'] tr").css("border", "solid 1px");
+        $("table[class='table table-hover'] tr:nth-child(even)").css("background-color", "#F2F2F2");
+        $("table thead[class='thead-dark'] a").css("height", "40px");
+        $("table thead[class='thead-dark'] a").css("vertical-align", "middle");
+        $("table thead[class='thead-dark'] a").css("padding", "5px");
+        $("table thead[class='thead-dark'] a").css("color", "white");
+        $("table thead[class='thead-dark'] a").css("text-decoration", "none");
+        $("table[class='table table-hover'] td").css("height", "40px");
+        $("table[class='table table-hover'] td").css("vertical-align", "middle");
+        $("table[class='table table-hover'] td").css("padding", "0px 0px 0px 5px");
+        $("table[class='table table-hover'] td").css("border-color", "black");
+
+        $("table thead[class='thead-dark'] a").attr("href", "#");
+
+        $("table thead[class='thead-dark'] a").click(function () { DefinirOrdenacao(this); });
+
+        $("a[class='btn btn-danger']").click(function () { Excluir(); });
+
+        PreencherDivMensagem();
+    });
+</script>

@@ -1,0 +1,91 @@
+﻿@model IEnumerable<MinhaAppMvcDesafio.ViewModels.EstoqueViewModel>
+<h1 class="titulo">@ViewData["Titulo"]</h1>
+
+@{
+    if (Model.Count() == 0)
+    {
+        <div class="lista_vazia">
+            Não há registros nesta tela
+        </div>
+    }
+    else
+    {
+        <div style="height:350px;">
+            <table class="table table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th style="width:15%;text-align:center;"><a href="" id="link1">@Html.DisplayNameFor(model => model.Data)</a></th>
+                        <th style="width:15%;text-align:center;"><a href="" id="link2">@Html.DisplayNameFor(model => model.Hora)</a></th>
+                        <th style="width:20%;text-align:center;"><a href="" id="link3">@Html.DisplayNameFor(model => model.Transacao)</a></th>
+                        <th style="width:20%;text-align:center;"><a href="" id="link4">@Html.DisplayNameFor(model => model.ValorTotal)</a></th>
+                        <th style="width:15%;text-align:center;"><a href="" id="link5">@Html.DisplayNameFor(model => model.Quantidade)</a></th>
+                        <th style="width:15%;text-align:right;"><a href="" id="link6">@Html.DisplayNameFor(model => model.Estoque)</a></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                    <tr>
+                        <td style="text-align:center;">@Html.DisplayFor(modelItem => item.Data)</td>
+                        <td style="text-align:center;">@Html.DisplayFor(modelItem => item.Hora)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Transacao)</td>
+                        <td style="text-align:right;">@Html.DisplayFor(modelItem => item.ValorTotal)</td>
+                        <td style="text-align:right;">@Html.DisplayFor(modelItem => item.Quantidade)</td>
+                        <td style="text-align:right;">@Html.DisplayFor(modelItem => item.Estoque)</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+        <div id="div_paginacao"></div>
+        <form>
+            <input type="hidden" id="Acao" name="Acao" value="@ViewBag.Acao" />
+            <input type="hidden" id="Pagina" name="Pagina" value="@ViewData["Pagina"]" />
+            <input type="hidden" id="QtdPaginas" name="QtdPaginas" value="@ViewData["QtdPaginas"]" />
+            <input type="hidden" id="ViewIndex" name="ViewIndex" value="produtos" />
+            <input type="hidden" id="OrdCampo" name="OrdCampo" value="@ViewData["OrdCampo"]" />
+            <input type="hidden" id="OrdSentido" name="OrdSentido" value="@ViewData["OrdSentido"]" />
+        </form>
+    }
+}
+
+<div id="div_mensagem"></div>
+
+<script>
+    function DefinirOrdenacao(link)
+    {
+        var opcao = link.id.replace("link", "");
+        var sentido = "0";
+        if (opcao == $("#OrdCampo").val())
+        {
+            sentido = ($("#OrdSentido").val() == "1" ? "0" : "1");
+        }
+        $("#OrdCampo").val(opcao);
+        $("#OrdSentido").val(sentido);
+        $("#Pagina").val($("#Pagina").val().substring(0, 1) + $("#OrdCampo").val() + $("#OrdSentido").val());
+        $("#link" + opcao).attr("href", "../lista-" + $("#ViewIndex").val() + "/" + $("#Pagina").val());
+    }
+
+    $(document).ready(function ()
+    {
+        $("a[class='btn btn-info']").css("font-weight", "bold").css("font-size", "17px").css("padding-top", "5px").css("padding-bottom", "5px").css("margin-left", "5px").css("margin-right", "5px");
+        $("a[class='btn btn-warning']").css("padding-top", "1px").css("padding-bottom", "2px").css("padding-left", "5px").css("padding-right", "5px");
+        $("a[class='btn btn-danger']").css("padding-top", "1px").css("padding-bottom", "2px").css("padding-left", "5px").css("padding-right", "5px");
+        $("table[class='table table-hover']").css("font-family", "Arial").css("font-size", "16px");
+        $("table[class='table table-hover'] tr").css("border", "solid 1px");
+        $("table[class='table table-hover'] tr:nth-child(even)").css("background-color", "#F2F2F2");
+        $("table thead[class='thead-dark'] a").css("height", "40px");
+        $("table thead[class='thead-dark'] a").css("vertical-align", "middle");
+        $("table thead[class='thead-dark'] a").css("padding", "5px");
+        $("table thead[class='thead-dark'] a").css("color", "white");
+        $("table thead[class='thead-dark'] a").css("text-decoration", "none");
+        $("table[class='table table-hover'] td").css("height", "40px");
+        $("table[class='table table-hover'] td").css("vertical-align", "middle");
+        $("table[class='table table-hover'] td").css("padding", "0px 0px 0px 5px");
+        $("table[class='table table-hover'] td").css("border-color", "black");
+
+        $("table thead[class='thead-dark'] a").attr("href", "#");
+        $("table thead[class='thead-dark'] a").click(function () { DefinirOrdenacao(this); });
+    });
+</script>

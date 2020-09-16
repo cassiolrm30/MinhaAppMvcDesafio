@@ -1,0 +1,101 @@
+﻿@model MinhaAppMvcDesafio.ViewModels.ProdutoViewModel
+<h1 class="titulo">@ViewData["Titulo"]</h1>
+
+<div class="row">
+    <div class="col-md-12">
+        <form enctype="multipart/form-data" asp-action="Salvar" method="post">
+            <input type="hidden" id="Id" name="Id" value="@ViewData["Id"]" />
+            <vc:Summary></vc:Summary>
+            <div class="form-group">
+                <label asp-for="FornecedorId" class="control-label"></label>
+                <select asp-for="FornecedorId" class="form-control">
+                    <option></option>
+                    @Html.Raw(ViewData["ComboFornecedores"])
+                </select>
+                <span asp-validation-for="FornecedorId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Nome" class="control-label"></label>
+                <input asp-for="Nome" class="form-control" />
+                <span asp-validation-for="Nome" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Descricao" class="control-label"></label>
+                <textarea cols="40" rows="3" asp-for="Descricao" class="form-control"></textarea>
+                <span asp-validation-for="Descricao" class="text-danger"></span>
+            </div>
+            <div class="form-group" style="padding-top:30px;">
+                <div class="row">
+                    <div class="col-7">
+                        <label asp-for="ImagemUpload" class="control-label"></label>
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="ImagemUpload" asp-for="ImagemUpload">
+                            <label data-browse="Procurar" style="width: 500px" class="custom-file-label" for="ImagemUpload"></label>
+                            <label style="font-weight:bold;display:none;" id="img_nome"></label>
+                        </div>
+                        <span asp-validation-for="ImagemUpload" class="text-danger"></span>
+                    </div>
+                    <div class="col-3">
+                        <label asp-for="Valor" class="control-label"></label>
+                        <input asp-for="Valor" class="form-control" />
+                        <span asp-validation-for="Valor" class="text-danger"></span>
+                    </div>
+                    <div class="col-2 form-check" style="text-align:right; padding-top:35px;">
+                        <label class="form-check-label">
+                            <input class="form-check-input" asp-for="Ativo" /> @Html.DisplayNameFor(model => model.Ativo)
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group" style="text-align:center;padding-top:30px;">
+                <input type="submit" value="Salvar" class="btn btn-primary" />
+                <a class="btn btn-info" href="javascript:window.history.back();">Voltar</a>
+            </div>
+        </form>
+    </div>
+</div>
+@section Scripts
+{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        $("#ImagemUpload").change(function ()
+        {
+            $("#img_nome").text(this.files[0].name.toUpperCase());
+            $("#img_nome")[0].style.display = 'block';
+        });
+
+        $("#Valor").keypress(function ()
+        {
+            return (MascaraMoeda(this, event));
+        });
+
+        $("#Valor").blur(function ()
+        {
+            if ($("#Valor").val() == "")
+                $("#Valor").val("0,00");
+        });
+
+        $("input[type='submit']").click(function ()
+        {
+            if ($("#Valor").val() == "")
+                $("#Valor").val("0,00");
+            var valor = $("#Valor").val();
+            while (valor.indexOf('.') != -1)    // Parei aqui
+                valor = valor.replace('.', '');
+            var valor = $("#Valor").val().replace(',', '');
+            $("#Valor").val(valor);
+        });
+
+        $(document).ready(function ()
+        {
+            $("input[type='submit']").css("font-weight", "bold").css("font-size", "17px").css("padding-top", "5px").css("padding-bottom", "5px").css("margin-left", "5px").css("margin-right", "5px");
+            $("a[class='btn btn-info']").css("font-weight", "bold").css("font-size", "17px").css("padding-top", "5px").css("padding-bottom", "5px").css("margin-left", "5px").css("margin-right", "5px");
+
+            $("#img_nome").text("@ViewData["NomeImagem"]");
+            $("#img_nome")[0].style.display = 'block';
+            $("#ImagemUpload").attr("data-val", "true");
+            $("#ImagemUpload").attr("data-val-required", "Preencha o campo Imagem");
+        });
+    </script>
+}
